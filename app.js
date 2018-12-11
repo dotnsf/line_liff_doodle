@@ -154,45 +154,6 @@ app.delete( '/image', function( req, res ){
   });
 });
 
-app.get( '/reset', function( req, res ){
-  res.contentType( 'application/json; charset=utf-8' );
-
-  if( db && settings.admin_username && settings.admin_password ){
-    var username = req.query.username;
-    var password = req.query.password;
-    if( username == settings.admin_username && password == settings.admin_password ){
-      cloudant.db.destroy( settings.db_name, function( err, body ){
-        if( err ){
-          db = cloudant.db.use( settings.db_name );
-          res.status( 400 );
-          res.write( JSON.stringify( { status: false, message: "failed to destroy." }, 2, null ) );
-          res.end();
-        }else{
-          cloudant.db.create( settings.db_name, function( err, body ){
-            if( err ){
-              db = null;
-              res.status( 400 );
-              res.write( JSON.stringify( { status: false, message: "failed to recreate." }, 2, null ) );
-              res.end();
-            }else{
-              db = cloudant.db.use( settings.db_name );
-              res.write( JSON.stringify( { status: true, message: body }, 2, null ) );
-              res.end();
-            }
-          });
-        }
-      });
-    }else{
-      res.status( 400 );
-      res.write( JSON.stringify( { status: false, message: "username and/or password not mached." }, 2, null ) );
-      res.end();
-    }
-  }else{
-    res.status( 400 );
-    res.write( JSON.stringify( { status: false, message: "no username and/or password not set on settings.js" }, 2, null ) );
-    res.end();
-  }
-});
 
 app.get( '/images', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
