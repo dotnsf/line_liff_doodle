@@ -1,0 +1,24 @@
+{
+    "name"         : "line_liff_doodle",
+    "version"      : "0.0.1",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "dependencies": {
+        "basic-auth-connect": "1.0.x",
+        "@cloudant/cloudant": "^3.0.1",
+        "cors": "2.8.x",
+        "easyimage": "2.1.x",
+        "express": "4.1.x",
+        "ejs": "2.5.5",
+        "multer": "1.1.x",
+        "body-parser": "1.17.x",
+        "cfenv":"~1.0.0",
+        "uuid":"3.3.2",
+        "fs":"~0.0.1"
+    },
+    "repository": {},
+    "engines": {
+        "node": "6.x"
+    }
+}
