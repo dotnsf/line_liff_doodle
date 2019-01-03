@@ -56,12 +56,18 @@ html, body{
   </canvas>
 
   <br/>
+  <input type="button" class="btn btn-xs" id="undo_btn" style="display:none;" value="<" onClick="undo();"/>
   <input type="button" class="btn btn-xs btn-warning" value="reset" onClick="resetCanvas();"/>
   <input type="button" class="btn btn-xs btn-primary" value="post" onClick="post();"/>
+  <input type="button" class="btn btn-xs" id="redo_btn" style="display:none;" value=">" onClick="redo();"/>
 </div>
 
 <script>
 var base_url = '<%= base_url %>';
+
+var undos = [];
+var redos = [];
+var stroke = null; //. { color: color, width: width, xys: [] }
 
 //. 参考: https://gist.github.com/Cartman0/436459b9b85cfdd1ca9c
 $(function(){
@@ -108,6 +114,10 @@ $(function(){
       ctx.stroke();
       mouse.startX = mouse.x;
       mouse.startY = mouse.y;
+
+      if( stroke ){
+        stroke.xys.push( [ mouse.x, mouse.y ] );
+      }
     }
   });
   //. マウスを押したら、描画OK(myDrawをtrue)
@@ -115,13 +125,34 @@ $(function(){
     mouse.isDrawing = true;
     mouse.startX = mouse.x;
     mouse.startY = mouse.y;
+
+    stroke = {};
+    stroke.color = $('#select_color').val();
+    stroke.width = parseInt( $('#select_linewidth').val() );
+    stroke.xys = [ [ mouse.x, mouse.y ] ];
   });
   //. マウスを上げたら、描画禁止(myDrawをfalse)
   canvas.addEventListener( "mouseup", function( e ){
     mouse.isDrawing = false;
+
+    if( stroke ){
+      undos.push( stroke );
+      $('#undo_btn').css( 'display', '' );
+      stroke = null;
+      redos = [];
+      $('#redo_btn').css( 'display', 'none' );
+    }
   });
-  canvas.addEventListener( 'mouseleave', function( e ){
+  canvas.addEventListener( "mouseleave", function( e ){
     mouse.isDrawing = false;
+
+    if( stroke ){
+      undos.push( stroke );
+      $('#undo_btn').css( 'display', '' );
+      stroke = null;
+      redos = [];
+      $('#redo_btn').css( 'display', 'none' );
+    }
   });
 
   canvas.addEventListener( "touchmove", function( e ){
@@ -141,6 +172,10 @@ $(function(){
       ctx.stroke();
       mouse.startX = mouse.x;
       mouse.startY = mouse.y;
+
+      if( stroke ){
+        stroke.xys.push( [ mouse.x, mouse.y ] );
+      }
     }
   });
   //. タッチしたら、描画OK(myDrawをtrue)
@@ -150,13 +185,34 @@ $(function(){
     mouse.isDrawing = true;
     mouse.startX = t.pageX - rect.left - borderWidth;
     mouse.startY = t.pageY - rect.top - borderWidth;
+
+    stroke = {};
+    stroke.color = $('#select_color').val();
+    stroke.width = parseInt( $('#select_linewidth').val() );
+    stroke.xys = [ [ mouse.startX, mouse.startY ] ];
   });
   //. タッチを上げたら、描画禁止(myDrawをfalse)
   canvas.addEventListener( "touchend", function( e ){
     mouse.isDrawing = false;
+
+    if( stroke ){
+      undos.push( stroke );
+      $('#undo_btn').css( 'display', '' );
+      stroke = null;
+      redos = [];
+      $('#redo_btn').css( 'display', 'none' );
+    }
   });
-  canvas.addEventListener( 'touchcancel', function( e ){
+  canvas.addEventListener( "touchcancel", function( e ){
     mouse.isDrawing = false;
+
+    if( stroke ){
+      undos.push( stroke );
+      $('#undo_btn').css( 'display', '' );
+      stroke = null;
+      redos = [];
+      $('#redo_btn').css( 'display', 'none' );
+    }
   });
 
   $('#select_color').change( function(){
@@ -195,9 +251,11 @@ function resized(){
     canvas.width = browserWidth * 0.8;
     canvas.height = browserHeight * 0.8;
   }
+
+  resetCanvas();
 }
 
-function resetCanvas(){
+function resetCanvas( no_reset_unredo ){
   var canvas = document.getElementById( 'mycanvas' );
   if( !canvas || !canvas.getContext ){
     return false;
@@ -209,6 +267,11 @@ function resetCanvas(){
   ctx.fillStyle = "rgb( 255, 255, 255 )";
   ctx.fillRect( 0, 0, canvas.width, canvas.height );
   ctx.stroke();
+
+  if( !no_reset_unredo ){
+    undos = [];
+    redos = [];
+  }
 }
 
 function isAndroid(){
@@ -277,6 +340,56 @@ function post(){
       console.log( textStatus + ': ' + errorThrown );
     }
   });
+}
+
+function undo(){
+  if( undos && undos.length > 0 ){
+    var last_stroke = undos.pop();
+    if( undos.length == 0 ){
+      $('#undo_btn').css( 'display', 'none' );
+    }
+    redos.push( last_stroke );
+    $('#redo_btn').css( 'display', '' );
+
+    redrawCanvas();
+  }
+}
+
+function redo(){
+  if( redos && redos.length > 0 ){
+    var last_stroke = redos.pop();
+    if( redos.length == 0 ){
+      $('#redo_btn').css( 'display', 'none' );
+    }
+    undos.push( last_stroke );
+    $('#undo_btn').css( 'display', '' );
+
+    redrawCanvas();
+  }
+}
+
+function redrawCanvas(){
+  if( undos && undos.length >= 0 ){
+    resetCanvas( true );
+    for( var i = 0; i < undos.length; i ++ ){
+      var stroke = undos[i];
+
+      for( var j = 1; j < stroke.xys.length; j ++ ){
+        var canvas = document.getElementById( 'mycanvas' );
+        if( !canvas || !canvas.getContext ){
+          return false;
+        }
+        var ctx = canvas.getContext( '2d' );
+
+        ctx.beginPath();
+        ctx.lineWidth = stroke.width;
+        ctx.moveTo( stroke.xys[j-1][0], stroke.xys[j-1][1] );
+        ctx.lineTo( stroke.xys[j][0], stroke.xys[j][1] );
+        ctx.strokeStyle = stroke.color;
+        ctx.stroke();
+      }
+    }
+  }
 }
 </script>
 </body>

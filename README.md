@@ -72,5 +72,5 @@ Sample Application for LIFF(LIne Front-end Framework), which can upload your doo
 
 ## Copyright
 
-2018 [K.Kimura @ Juge.Me](https://github.com/dotnsf) all rights reserved.
+2018-2019 [K.Kimura @ Juge.Me](https://github.com/dotnsf) all rights reserved.
 
