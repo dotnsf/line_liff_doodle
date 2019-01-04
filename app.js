@@ -50,7 +50,7 @@ app.set( 'view engine', 'ejs' );
 app.use( cors() );
 
 app.get( '/', function( req, res ){
-  res.render( 'index', { base_url: settings.base_url } );
+  res.render( 'index', {} );
 });
 
 app.post( '/image', function( req, res ){

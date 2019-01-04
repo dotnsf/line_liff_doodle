@@ -47,10 +47,6 @@ Sample Application for LIFF(LIne Front-end Framework), which can upload your doo
 
     - exports.db_password : password for IBM Cloudant
 
-    - exports.base_url : Base application URL
-
-    - exports.line_access_token : Longterm Access Token for LIFF application
-
 - Deploy application into IBM Cloud
 
 - Set endpoint URL in you LIFF application setting, and get LIFF URL(line://app/XXXXXX..)

@@ -4,10 +4,6 @@ exports.db_name = 'doodledb';
 
 exports.app_port = 0;
 
-exports.base_url = '';
-
-exports.line_access_token = '';
-
 if( process.env.VCAP_SERVICES ){
   var VCAP_SERVICES = JSON.parse( process.env.VCAP_SERVICES );
   if( VCAP_SERVICES && VCAP_SERVICES.cloudantNoSQLDB ){
