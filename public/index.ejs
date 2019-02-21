@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <title>いらいん</title>
-<script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet"/>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
@@ -52,22 +52,24 @@ html, body{
 </select>
 
 <div id="canvas_div">
-  <canvas width="80%" height="50%" id="mycanvas">
-  </canvas>
+  <div id="cdiv"></div>
 
   <br/>
   <input type="button" class="btn btn-xs" id="undo_btn" style="display:none;" value="<" onClick="undo();"/>
   <input type="button" class="btn btn-xs btn-warning" value="reset" onClick="resetCanvas();"/>
   <input type="button" class="btn btn-xs btn-primary" value="post" onClick="post();"/>
   <input type="button" class="btn btn-xs" id="redo_btn" style="display:none;" value=">" onClick="redo();"/>
+  
+  <br/>
+  <input type="button" class="btn btn-xs" id="setbg_btn" value="背景色" onClick="setBG();"/>
+  <input type="button" class="btn btn-xs" id="resetbg_btn" value="背景色リセット" onClick="resetBG();"/>
 </div>
 
 <script>
-var base_url = location.origin + '/';
-
 var undos = [];
 var redos = [];
 var stroke = null; //. { color: color, width: width, xys: [] }
+var backgroundcolor = null;
 
 //. 参考: https://gist.github.com/Cartman0/436459b9b85cfdd1ca9c
 $(function(){
@@ -82,6 +84,12 @@ $(function(){
       //alert( JSON.stringify( err, null, 2 ) );
     }
   );
+
+  init();
+});
+
+function init(){
+  $('#cdiv').html( '<canvas width="80%" height="50%" id="mycanvas"></canvas>' );
 
   var canvas = document.getElementById( 'mycanvas' );
   if( !canvas || !canvas.getContext ){
@@ -143,7 +151,7 @@ $(function(){
       $('#redo_btn').css( 'display', 'none' );
     }
   });
-  canvas.addEventListener( "mouseleave", function( e ){
+  canvas.addEventListener( 'mouseleave', function( e ){
     mouse.isDrawing = false;
 
     if( stroke ){
@@ -159,6 +167,8 @@ $(function(){
     //. タッチが動いたら座標値を取得
     var t = e.changedTouches[0];
     var rect = e.target.getBoundingClientRect();
+    //mouse.x = e.pageX - rect.left - borderWidth;
+    //mouse.y = e.pageY - rect.top - borderWidth;
     mouse.x = ( isAndroid() ? t.pageX : e.pageX ) - rect.left - borderWidth;
     mouse.y = ( isAndroid() ? t.pageY : e.pageY ) - rect.top - borderWidth;
 
@@ -203,7 +213,7 @@ $(function(){
       $('#redo_btn').css( 'display', 'none' );
     }
   });
-  canvas.addEventListener( "touchcancel", function( e ){
+  canvas.addEventListener( 'touchcancel', function( e ){
     mouse.isDrawing = false;
 
     if( stroke ){
@@ -239,9 +249,7 @@ $(function(){
     event.preventDefault();
   }
   window.addEventListener( 'touchmove', movefun, { passive: false } );
-
-  resetCanvas();
-});
+}
 
 function resized(){
   var browserWidth = window.innerWidth;
@@ -251,26 +259,16 @@ function resized(){
     canvas.width = browserWidth * 0.8;
     canvas.height = browserHeight * 0.8;
   }
-
-  //resetCanvas();
 }
 
 function resetCanvas( no_reset_unredo ){
-  var canvas = document.getElementById( 'mycanvas' );
-  if( !canvas || !canvas.getContext ){
-    return false;
-  }
-  var ctx = canvas.getContext( '2d' );
-
-  //. 全体を白でベタ塗り
-  ctx.beginPath();
-  ctx.fillStyle = "rgb( 255, 255, 255 )";
-  ctx.fillRect( 0, 0, canvas.width, canvas.height );
-  ctx.stroke();
+  init();
+  resized();
 
   if( !no_reset_unredo ){
     undos = [];
     redos = [];
+    backgroundcolor = null;
   }
 }
 
@@ -310,9 +308,6 @@ function post(){
     contentType: false,
     processData: false,
     success: function( result, dataType ){
-      //alert( result );
-      //result = JSON.parse( result );
-      console.log( result );
       if( result.id ){
         //. https://developers.line.biz/ja/reference/messaging-api/#image-message
         var img_url = base_url + 'image?id=' + result.id;
@@ -368,9 +363,37 @@ function redo(){
   }
 }
 
+function setBG(){
+  var color = $('#select_color').val();
+  if( color ){
+    backgroundcolor = color;
+    redrawCanvas();
+  }
+}
+
+function resetBG(){
+  backgroundcolor = null;
+  redrawCanvas();
+}
+
 function redrawCanvas(){
   if( undos && undos.length >= 0 ){
     resetCanvas( true );
+
+    if( backgroundcolor ){
+      var canvas = document.getElementById( 'mycanvas' );
+      if( !canvas || !canvas.getContext ){
+        return false;
+      }
+      var ctx = canvas.getContext( '2d' );
+
+      //. 全体をベタ塗り
+      ctx.beginPath();
+      ctx.fillStyle = backgroundcolor; //"rgb( 255, 255, 255 )";
+      ctx.fillRect( 0, 0, canvas.width, canvas.height );
+      ctx.stroke();
+    }
+    
     for( var i = 0; i < undos.length; i ++ ){
       var stroke = undos[i];
 
