@@ -24,6 +24,7 @@ html, body{
 </head>
 <body>
 <select id="select_color" name="select_color">
+  <option style="color:black;" value="transparent">透明</option>
   <option style="color:black;" value="black" selected="selected">黒</option>
   <option style="color:lightgray;" value="white">白</option>
   <option style="color:red;" value="red">赤</option>
@@ -114,11 +115,20 @@ function init(){
 
     //. isDrawがtrueのとき描画
     if( mouse.isDrawing ){
+      var color = $('#select_color').val();
+      if( color == 'transparent' ){
+        ctx.globalCompositeOperation = 'destination-out';
+      }else{
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
       ctx.beginPath();
       ctx.lineWidth = parseInt( $('#select_linewidth').val() );
       ctx.moveTo( mouse.startX, mouse.startY );
       ctx.lineTo( mouse.x, mouse.y );
-      ctx.strokeStyle = $('#select_color').val(); //mouse.color;
+      if( color != 'transparent' ){
+        ctx.strokeStyle = color;
+      }
       ctx.stroke();
       mouse.startX = mouse.x;
       mouse.startY = mouse.y;
@@ -174,11 +184,20 @@ function init(){
 
     //. isDrawがtrueのとき描画
     if( mouse.isDrawing ){
+      var color = $('#select_color').val();
+      if( color == 'transparent' ){
+        ctx.globalCompositeOperation = 'destination-out';
+      }else{
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
       ctx.beginPath();
       ctx.lineWidth = parseInt( $('#select_linewidth').val() );
       ctx.moveTo( mouse.startX, mouse.startY );
       ctx.lineTo( mouse.x, mouse.y );
-      ctx.strokeStyle = $('#select_color').val(); //mouse.color;
+      if( color != 'transparent' ){
+        ctx.strokeStyle = color;
+      }
       ctx.stroke();
       mouse.startX = mouse.x;
       mouse.startY = mouse.y;
@@ -229,6 +248,8 @@ function init(){
     var color = $(this).val();
     if( color == 'white' ){
       color = 'lightgray';
+    }else if( color == 'transparent' ){
+      color = 'black';
     }
     $(this).css( { 'color': color } );
     $('#select_linewidth').css( { 'color': color } );
@@ -404,11 +425,20 @@ function redrawCanvas(){
         }
         var ctx = canvas.getContext( '2d' );
 
+        var color = stroke.color;
+        if( color == 'transparent' ){
+          ctx.globalCompositeOperation = 'destination-out';
+        }else{
+          ctx.globalCompositeOperation = 'source-over';
+        }
+
         ctx.beginPath();
         ctx.lineWidth = stroke.width;
         ctx.moveTo( stroke.xys[j-1][0], stroke.xys[j-1][1] );
         ctx.lineTo( stroke.xys[j][0], stroke.xys[j][1] );
-        ctx.strokeStyle = stroke.color;
+        if( color != 'transparent' ){
+          ctx.strokeStyle = color;
+        }
         ctx.stroke();
       }
     }
