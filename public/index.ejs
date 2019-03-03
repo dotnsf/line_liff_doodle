@@ -52,18 +52,16 @@ html, body{
   <option value="10">10</option>
 </select>
 
+<input type="button" class="btn btn-xs" id="setbg_btn" value="背景色" onClick="setBG();"/>
+
 <div id="canvas_div">
   <div id="cdiv"></div>
 
   <br/>
-  <input type="button" class="btn btn-xs" id="undo_btn" style="display:none;" value="<" onClick="undo();"/>
+  <input type="button" class="btn btn-xs" id="undo_btn" value="<" onClick="undo();" disabled="disabled"/>
   <input type="button" class="btn btn-xs btn-warning" value="reset" onClick="resetCanvas();"/>
   <input type="button" class="btn btn-xs btn-primary" value="post" onClick="post();"/>
-  <input type="button" class="btn btn-xs" id="redo_btn" style="display:none;" value=">" onClick="redo();"/>
-  
-  <br/>
-  <input type="button" class="btn btn-xs" id="setbg_btn" value="背景色" onClick="setBG();"/>
-  <input type="button" class="btn btn-xs" id="resetbg_btn" value="背景色リセット" onClick="resetBG();"/>
+  <input type="button" class="btn btn-xs" id="redo_btn" value=">" onClick="redo();" disabled="disabled"/>
 </div>
 
 <script>
@@ -155,10 +153,10 @@ function init(){
 
     if( stroke ){
       undos.push( stroke );
-      $('#undo_btn').css( 'display', '' );
+      $('#undo_btn').prop( 'disabled', false );
       stroke = null;
       redos = [];
-      $('#redo_btn').css( 'display', 'none' );
+      $('#redo_btn').prop( 'disabled', true );
     }
   });
   canvas.addEventListener( 'mouseleave', function( e ){
@@ -166,10 +164,10 @@ function init(){
 
     if( stroke ){
       undos.push( stroke );
-      $('#undo_btn').css( 'display', '' );
+      $('#undo_btn').prop( 'disabled', false );
       stroke = null;
       redos = [];
-      $('#redo_btn').css( 'display', 'none' );
+      $('#redo_btn').prop( 'disabled', true );
     }
   });
 
@@ -226,10 +224,10 @@ function init(){
 
     if( stroke ){
       undos.push( stroke );
-      $('#undo_btn').css( 'display', '' );
+      $('#undo_btn').prop( 'disabled', false );
       stroke = null;
       redos = [];
-      $('#redo_btn').css( 'display', 'none' );
+      $('#redo_btn').prop( 'disabled', true );
     }
   });
   canvas.addEventListener( 'touchcancel', function( e ){
@@ -237,10 +235,10 @@ function init(){
 
     if( stroke ){
       undos.push( stroke );
-      $('#undo_btn').css( 'display', '' );
+      $('#undo_btn').prop( 'disabled', false );
       stroke = null;
       redos = [];
-      $('#redo_btn').css( 'display', 'none' );
+      $('#redo_btn').prop( 'disabled', true );
     }
   });
 
@@ -362,10 +360,10 @@ function undo(){
   if( undos && undos.length > 0 ){
     var last_stroke = undos.pop();
     if( undos.length == 0 ){
-      $('#undo_btn').css( 'display', 'none' );
+      $('#undo_btn').prop( 'disabled', true );
     }
     redos.push( last_stroke );
-    $('#redo_btn').css( 'display', '' );
+    $('#redo_btn').prop( 'disabled', false );
 
     redrawCanvas();
   }
@@ -375,10 +373,10 @@ function redo(){
   if( redos && redos.length > 0 ){
     var last_stroke = redos.pop();
     if( redos.length == 0 ){
-      $('#redo_btn').css( 'display', 'none' );
+      $('#redo_btn').css( 'display', true );
     }
     undos.push( last_stroke );
-    $('#undo_btn').css( 'display', '' );
+    $('#undo_btn').css( 'display', false );
 
     redrawCanvas();
   }
@@ -387,14 +385,13 @@ function redo(){
 function setBG(){
   var color = $('#select_color').val();
   if( color ){
-    backgroundcolor = color;
+    if( color != 'transparent' ){
+      backgroundcolor = color;
+    }else{
+      backgroundcolor = null;
+    }
     redrawCanvas();
   }
-}
-
-function resetBG(){
-  backgroundcolor = null;
-  redrawCanvas();
 }
 
 function redrawCanvas(){
@@ -414,7 +411,7 @@ function redrawCanvas(){
       ctx.fillRect( 0, 0, canvas.width, canvas.height );
       ctx.stroke();
     }
-    
+
     for( var i = 0; i < undos.length; i ++ ){
       var stroke = undos[i];
 
