@@ -373,10 +373,10 @@ function redo(){
   if( redos && redos.length > 0 ){
     var last_stroke = redos.pop();
     if( redos.length == 0 ){
-      $('#redo_btn').css( 'display', true );
+      $('#redo_btn').prop( 'display', true );
     }
     undos.push( last_stroke );
-    $('#undo_btn').css( 'display', false );
+    $('#undo_btn').prop( 'display', false );
 
     redrawCanvas();
   }
