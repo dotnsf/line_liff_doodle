@@ -128,6 +128,7 @@ function init(){
 
       ctx.beginPath();
       ctx.lineWidth = parseInt( $('#select_linewidth').val() );
+      ctx.lineCap = 'round';
       ctx.moveTo( mouse.startX, mouse.startY );
       ctx.lineTo( mouse.x, mouse.y );
       if( color != 'transparent' ){
@@ -197,6 +198,7 @@ function init(){
 
       ctx.beginPath();
       ctx.lineWidth = parseInt( $('#select_linewidth').val() );
+      ctx.lineCap = 'round';
       ctx.moveTo( mouse.startX, mouse.startY );
       ctx.lineTo( mouse.x, mouse.y );
       if( color != 'transparent' ){
@@ -437,6 +439,7 @@ function redrawCanvas(){
 
         ctx.beginPath();
         ctx.lineWidth = stroke.width;
+        ctx.lineCap = 'round';
         ctx.moveTo( stroke.xys[j-1][0], stroke.xys[j-1][1] );
         ctx.lineTo( stroke.xys[j][0], stroke.xys[j][1] );
         if( color != 'transparent' ){
