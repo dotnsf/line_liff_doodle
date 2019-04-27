@@ -6,6 +6,10 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet"/>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<link href="//use.fontawesome.com/releases/v5.8/css/all.css" rel="stylesheet"/>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
+<link type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/slick-caroucel/1.9.0/click.css" rel="stylesheet" media="screen"/>
+<link type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/slick-caroucel/1.9.0/click-theme.css" rel="stylesheet" media="screen"/>
 <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -19,6 +23,21 @@ html, body{
 }
 #mycanvas{
   border: 1px solid #333;
+}
+
+.slick-slide{
+  position: relative;
+}
+.slick-slide .caption{
+  position: absolute;
+  left: 0;
+  z-index: 2;
+  width: calc( 100% - 40px );
+  padding: 20px;
+  color: #003;
+  font-size: 14px;
+  opacity: 1;
+  transition: .3s ease;
 }
 </style>
 </head>
@@ -52,7 +71,8 @@ html, body{
   <option value="10">10</option>
 </select>
 
-<input type="button" class="btn btn-xs" id="setbg_btn" value="背景色" onClick="setBG();"/>
+<input type="button" class="btn btn-xs btn-secondary p-0" id="setbg_btn" value="背景色" onClick="setBG();"/>
+<a href="#" class="btn btn-xs btn-success p-0" data-toggle="modal" data-target="#historyModal" id="history_btn"><i class="fas fa-grip-horizontal"></i></a>
 
 <div id="canvas_div">
   <div id="cdiv"></div>
@@ -62,6 +82,23 @@ html, body{
   <input type="button" class="btn btn-xs btn-warning" value="reset" onClick="resetCanvas();"/>
   <input type="button" class="btn btn-xs btn-primary" value="post" onClick="post();"/>
   <input type="button" class="btn btn-xs" id="redo_btn" value=">" onClick="redo();" disabled="disabled"/>
+</div>
+
+<div class="modal bd-example-modal-lg fade" id="historyModal" tabindex="-1" role="dialog" aria-labbeledby="historyModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-contered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="historyModalLabel">履歴</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="historymodal-body">
+        <div id="mycarousel" class="slick-box">
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -80,6 +117,41 @@ var backgroundcolor = null;
 $(function(){
   liff.init(
     data => {
+      userId = data.context.userId;
+
+      $.ajax({
+        type: 'GET',
+        url: '/images_by_userId/' + userId,
+        success: function( result ){
+          if( result && result.status && result.images.length > 0 ){
+            var figures = '';
+            for( var i = result.images.length - 1; i >= 0; i -- ){
+              var image_url = 'image?id=' + result.images[i]._id;
+              var figure = '<figure>'
+                + '<a href="#" onClick="imgClick(\'' + image_url + '\');">'
+                + '<img src="/' + image_url + '&att=thumbnail" width="100%"/>'
+                + '</a>'
+                + '</figure>';
+              figures += figure;
+            }
+
+            $('#mycarousel').html( '<div id="mycarousel-inner"></div>' );
+            $('#mycarousel-inner').html( figures );
+            $('#mycarousel-inner').slick({
+              arrows: true,
+              autoplay: false,
+              infinite: false,
+              initialSlide: 0,
+              slidesToShow: 1,
+              slidesToScroll: 1
+            });
+          }
+        },
+        error: function( err ){
+          //alert( JSON.stringify( err ) );
+        }
+      });
+
       liff.getProfile()
         .then( profile => {
         }).catch( err => {
@@ -450,6 +522,22 @@ function redrawCanvas(){
       }
     }
   }
+}
+
+function imgClick( img_url ){
+  var data = {
+    type: 'image',
+    originalContentUrl: base_url + img_url,
+    previewImageUrl: baseurl + img_url + '&att=thumbnail'
+  };
+
+  liff.sendMessage([
+    data
+  ]).then( () => {
+    liff.closeWindow();
+  }).catch( ( err ) => {
+    console.log( 'error', err );
+  });
 }
 </script>
 </body>

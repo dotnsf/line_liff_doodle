@@ -25,6 +25,21 @@ if( cloudant ){
             db = null;
           }else{
             db = cloudant.db.use( settings.db_name );
+
+            //. query index
+            var query_index_userId = {
+              _id: "_design/userId-index",
+              language: "query",
+              indexes: {
+                "userId-index": {
+                  index: {
+                    fields: [ { name: "userId", type: "string" } ]
+                  },
+                  type: "text"
+                }
+              }
+            };
+            db.insert( query_index_userId, function( err, body ){} );
           }
         });
       }else{
@@ -197,6 +212,45 @@ app.get( '/images', function( req, res ){
   }
 });
 
+app.get( '/images', function( req, res ){
+  res.contentType( 'application/json; charset=utf-8' );
+
+  var userId = req.params.userId;
+  var limit = req.query.limit ? parseInt( req.query.limit ) : 0;
+  var offset = req.query.offset ? parseInt( req.query.offset ) : 0;
+
+  if( db ){
+    db.find( { selector: { userId: userId } }, function( err, body ){
+      if( err ){
+        res.status( 400 );
+        res.write( JSON.stringify( { status: false, message: err }, 2, null ) );
+        res.end();
+      }else{
+        var total = body.total_rows;
+        var images = body.docs;
+
+        images.sort( compareByTimestamp );
+
+        if( offset || limit ){
+          if( offset + limit > total ){
+            images = images.slice( offset );
+          }else{
+            images = images.slice( offset, offset + limit );
+          }
+        }
+
+        var result = { status: true, total: total, limit: limit, offset: offset, images: images };
+        res.write( JSON.stringify( result, 2, null ) );
+        res.end();
+      }
+    });
+  }else{
+    res.status( 400 );
+    res.write( JSON.stringify( { status: false, message: 'db is failed to initialize.' }, 2, null ) );
+    res.end();
+  }
+});
+
 
 function timestamp2datetime( ts ){
   if( ts ){
@@ -213,6 +267,14 @@ function timestamp2datetime( ts ){
   }else{
     return "";
   }
+}
+
+function compareByTimestamp( a, b ){
+  var r = 0;
+  if( a.timestamp < b.timestamp ){ r = -1; }
+  else if( a.timestamp < b.timestamp ){ r = 1; }
+
+  return r;
 }
 
 
