@@ -44,9 +44,39 @@ if( cloudant ){
         });
       }else{
         db = cloudant.db.use( settings.db_name );
+
+        //. query index
+        var query_index_userId = {
+          _id: "_design/userId-index",
+          language: "query",
+          indexes: {
+            "userId-index": {
+              index: {
+                fields: [ { name: "userId", type: "string" } ]
+              },
+              type: "text"
+            }
+          }
+        };
+        db.insert( query_index_userId, function( err, body ){} );
       }
     }else{
       db = cloudant.db.use( settings.db_name );
+
+      //. query index
+      var query_index_userId = {
+        _id: "_design/userId-index",
+        language: "query",
+        indexes: {
+          "userId-index": {
+            index: {
+              fields: [ { name: "userId", type: "string" } ]
+            },
+            type: "text"
+          }
+        }
+      };
+      db.insert( query_index_userId, function( err, body ){} );
     }
   });
 }
