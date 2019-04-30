@@ -212,7 +212,7 @@ app.get( '/images', function( req, res ){
   }
 });
 
-app.get( '/images', function( req, res ){
+app.get( '/images_by_userId', function( req, res ){
   res.contentType( 'application/json; charset=utf-8' );
 
   var userId = req.params.userId;
