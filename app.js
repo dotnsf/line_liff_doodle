@@ -107,6 +107,7 @@ app.post( '/image', function( req, res ){
   var ext = imgtype.split( "/" )[1];
   var imgfilename = req.file.filename;
   var filename = req.file.originalname;
+  var userId = req.body.userId;
 
   //. thumbnail
   var imgpath0 = imgpath + '_0';
@@ -122,6 +123,7 @@ app.post( '/image', function( req, res ){
       var params2 = {
         _id: image_id,
         filename: filename,
+        userId: userId,
         timestamp: ( new Date() ).getTime(),
         _attachments: {
           image: {

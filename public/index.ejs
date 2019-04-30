@@ -401,6 +401,7 @@ function post(){
   console.log( 'Sending data... : ' + blob.size );
   var formData = new FormData();
   formData.append( 'image', blob );    //. <form enctype='multipart/formdata'><input name='image' type='file'/> ...
+  formData.append( 'userId', userId );
   $.ajax({
     type: 'POST',
     url: '/image',
