@@ -1,6 +1,6 @@
 {
-    "name"         : "line_liff_doodle",
-    "version"      : "0.0.1",
+    "name": "line_liff_doodle",
+    "version": "0.0.1",
     "scripts": {
         "start": "node app.js"
     },
@@ -13,9 +13,9 @@
         "ejs": "2.5.5",
         "multer": "1.1.x",
         "body-parser": "1.17.x",
-        "cfenv":"~1.0.0",
-        "uuid":"3.3.2",
-        "fs":"~0.0.1"
+        "cfenv": "~1.0.0",
+        "uuid": "3.3.2",
+        "fs": "~0.0.1"
     },
     "repository": {},
     "engines": {

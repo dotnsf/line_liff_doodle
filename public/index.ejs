@@ -8,8 +8,8 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet"/>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
-<link type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/slick-caroucel/1.9.0/click.css" rel="stylesheet" media="screen"/>
-<link type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/slick-caroucel/1.9.0/click-theme.css" rel="stylesheet" media="screen"/>
+<link type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.css" rel="stylesheet" media="screen"/>
+<link type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.css" rel="stylesheet" media="screen"/>
 <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -84,7 +84,7 @@ html, body{
   <input type="button" class="btn btn-xs" id="redo_btn" value=">" onClick="redo();" disabled="disabled"/>
 </div>
 
-<div class="modal bd-example-modal-lg fade" id="historyModal" tabindex="-1" role="dialog" aria-labbeledby="historyModal" aria-hidden="true">
+<div class="modal bd-example-modal-lg fade" id="historyModal" tabindex="-1" role="dialog" aria-labelledby="historyModal" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -529,12 +529,13 @@ function imgClick( img_url ){
   var data = {
     type: 'image',
     originalContentUrl: base_url + img_url,
-    previewImageUrl: baseurl + img_url + '&att=thumbnail'
+    previewImageUrl: base_url + img_url + '&att=thumbnail'
   };
 
-  liff.sendMessage([
+  liff.sendMessages([
     data
   ]).then( () => {
+    console.log( 'message sent' );
     liff.closeWindow();
   }).catch( ( err ) => {
     console.log( 'error', err );
