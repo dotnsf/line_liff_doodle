@@ -4,6 +4,8 @@
 
 Sample Application for LIFF(LIne Front-end Framework), which can upload your doodle in your LINE message.
 
+(2020.Jan.23)LIFF v2.1 enabled.
+
 
 ## Pre-requisite
 
@@ -13,13 +15,13 @@ Sample Application for LIFF(LIne Front-end Framework), which can upload your doo
 
     - https://developers.line.biz/ja/
 
-- LINE Channel ( as Messaging API )
+- LIFF application in LINE Channel ( as Messaging API )
 
     - Application size need to be **tall** or **full**.
 
-    - Longterm Access Token
+    - Scopes need to include both **chat_message.write** and **profile**.
 
-    - LIFF URL
+    - Find your LIFF URL(line://app/{liff_id}) for later use.
 
 - Public application server for Node.js
 
@@ -47,11 +49,13 @@ Sample Application for LIFF(LIne Front-end Framework), which can upload your doo
 
     - exports.db_password : password for IBM Cloudant
 
+    - exports.liff_id : liff_id which is assigned when you create LIFF app.
+
 - Deploy application into IBM Cloud
 
 - Set endpoint URL in you LIFF application setting, and get LIFF URL(line://app/XXXXXX..)
 
-- Paste LIFF URL as your LINE message, and click that URL.
+- Paste LIFF URL or Web URL(https://liff.line.me/{liff_id}) as your LINE message, and click that URL.
 
 
 
@@ -68,5 +72,4 @@ Sample Application for LIFF(LIne Front-end Framework), which can upload your doo
 
 ## Copyright
 
-2018-2019 [K.Kimura @ Juge.Me](https://github.com/dotnsf) all rights reserved.
-
+2018-2020 [K.Kimura @ Juge.Me](https://github.com/dotnsf) all rights reserved.

@@ -2,8 +2,6 @@
 
 var express = require( 'express' ),
     basicAuth = require( 'basic-auth-connect' ),
-    cors = require( 'cors' ),
-    cfenv = require( 'cfenv' ),
     easyimg = require( 'easyimage' ),
     multer = require( 'multer' ),
     bodyParser = require( 'body-parser' ),
@@ -81,7 +79,7 @@ if( cloudant ){
   });
 }
 
-var appEnv = cfenv.getAppEnv();
+//var appEnv = cfenv.getAppEnv();
 
 app.use( multer( { dest: './tmp/' } ).single( 'image' ) );
 app.use( bodyParser.urlencoded( { extended: true } ) );
@@ -92,10 +90,8 @@ app.use( express.static( __dirname + '/public' ) );
 app.set( 'views', __dirname + '/public' );
 app.set( 'view engine', 'ejs' );
 
-app.use( cors() );
-
 app.get( '/', function( req, res ){
-  res.render( 'index', {} );
+  res.render( 'index', { liff_id: settings.liff_id } );
 });
 
 app.post( '/image', function( req, res ){
@@ -310,5 +306,6 @@ function compareByTimestamp( a, b ){
 }
 
 
-app.listen( appEnv.port );
-console.log( "server stating on " + appEnv.port + " ..." );
+var port = process.env.port || 8080;
+app.listen( port );
+console.log( "server stating on " + port + " ..." );

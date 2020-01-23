@@ -10,7 +10,7 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
 <link type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.css" rel="stylesheet" media="screen"/>
 <link type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.css" rel="stylesheet" media="screen"/>
-<script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
+<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 
@@ -103,7 +103,7 @@ html, body{
 
 <script>
 var base_url = location.origin + '/';
-console.log( base_url );
+//console.log( base_url );
 var userId = null;
 var name = null;
 var picurl = null;
@@ -115,9 +115,10 @@ var backgroundcolor = null;
 
 //. 参考: https://gist.github.com/Cartman0/436459b9b85cfdd1ca9c
 $(function(){
-  liff.init(
-    data => {
-      userId = data.context.userId;
+  liff.init( { liffId: '<%= liff_id %>' } ).then( function(){
+    liff.getProfile().then( profile => {
+      //alert( JSON.stringify( profile ) );
+      userId = profile.userId;
 
       $.ajax({
         type: 'GET',
@@ -151,16 +152,12 @@ $(function(){
           //alert( JSON.stringify( err ) );
         }
       });
-
-      liff.getProfile()
-        .then( profile => {
-        }).catch( err => {
-        });
-    },
-    err => {
-      //alert( JSON.stringify( err, null, 2 ) );
-    }
-  );
+    }).catch( err => {
+      console.log( "getProfile(): " + JSON.stringify( err ) );
+    });
+  }).catch( err => {
+    console.log( "init(): " + JSON.stringify( err ) );
+  });
 
   init();
 });
@@ -419,7 +416,6 @@ function post(){
           originalContentUrl: img_url,
           previewImageUrl: img_url0
         };
-        //alert( JSON.stringify( data, null, 2 ) );
 
         liff.sendMessages([
           data
@@ -433,6 +429,7 @@ function post(){
       }
     },
     error: function( jqXHR, textStatus, errorThrown ){
+      alert( textStatus + ': ' + errorThrown );
       console.log( textStatus + ': ' + errorThrown );
     }
   });
