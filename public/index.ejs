@@ -417,7 +417,9 @@ function post(){
           previewImageUrl: img_url0
         };
 
-        liff.sendMessages([
+        //. Use shareTargetPicker()
+        //liff.sendMessages([
+        liff.shareTargetPicker([
           data
         ]).then( () => {
           console.log( 'message sent' );
