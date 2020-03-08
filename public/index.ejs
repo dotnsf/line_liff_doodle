@@ -115,7 +115,16 @@ var backgroundcolor = null;
 
 //. 参考: https://gist.github.com/Cartman0/436459b9b85cfdd1ca9c
 $(function(){
+  //. 参考: https://liff-stp.herokuapp.com/
   liff.init( { liffId: '<%= liff_id %>' } ).then( function(){
+    if( !liff.isInClient() ){
+      if( !liff.isLoggedIn() ){
+        liff.login({
+          redirectUri: base_url
+        });
+      }
+    }
+
     liff.getProfile().then( profile => {
       //alert( JSON.stringify( profile ) );
       userId = profile.userId;
