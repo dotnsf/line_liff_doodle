@@ -427,11 +427,12 @@ function post(){
         };
 
         //. Use shareTargetPicker()
-        //liff.sendMessages([
+        //liff.sendMessages([  //. "Error: user doesn't grant required permissions yet"
         liff.shareTargetPicker([
           data
         ]).then( () => {
           console.log( 'message sent' );
+          //alert( '送信されました' );
           liff.closeWindow();
         }).catch( ( err ) => {
           console.log( 'error', err );
