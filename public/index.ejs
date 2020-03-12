@@ -414,7 +414,6 @@ function post(){
   var formData = new FormData();
   formData.append( 'image', blob );    //. <form enctype='multipart/formdata'><input name='image' type='file'/> ...
   formData.append( 'userId', userId );
-  alert( 'blob.size = ' + blob.size );
   $.ajax({
     type: 'POST',
     url: '/image',
@@ -422,8 +421,9 @@ function post(){
     contentType: false,
     processData: false,
     success: function( result, dataType ){
-      alert( 'success: result.id = ' + result.id );
       if( result.id ){
+        //var accessToken = liff.getAccessToken();
+        //alert( 'accessToken = ' + accessToken );
         //. https://developers.line.biz/ja/reference/messaging-api/#image-message
         var img_url = base_url + 'image?id=' + result.id;
         var img_url0 = img_url + '&att=thumbnail';
@@ -436,7 +436,7 @@ function post(){
 
         //liff.sendMessages([  //. "Error: user doesn't grant required permissions yet"
         if( liff.isInClient() ){
-          alert( 'liff.sendMessages()' );
+          //alert( 'liff.sendMessages()' );
           /* type = 'text' でも同様にエラーとなることを確認済み
           data = {
             type: "text",
@@ -448,20 +448,20 @@ function post(){
             data
           ]).then( () => {
             console.log( 'message sent' );
-            //alert( '送信されました' );
+            alert( '送信されました' );
             liff.closeWindow();
           }).catch( ( err ) => {
             console.log( 'error', err );
             alert( JSON.stringify( err, null, 2 ) );  //. { line: 2, column: 5870, sourceURL: 'https://static.line-scdn.net/liff/edge/2.1/sdk.js' }
           });
         }else{
-          alert( 'liff.shareTargetPicker()' );
+          //alert( 'liff.shareTargetPicker()' );
           //. Use shareTargetPicker()
           liff.shareTargetPicker([
             data
           ]).then( () => {
             console.log( 'message sent' );
-            //alert( '送信されました' );
+            alert( '送信されました' );
             liff.closeWindow();
           }).catch( ( err ) => {
             console.log( 'error', err );
