@@ -115,7 +115,6 @@ var backgroundcolor = null;
 
 //. 参考: https://gist.github.com/Cartman0/436459b9b85cfdd1ca9c
 $(function(){
-  //alert( 'liff.isInClient() = ' + liff.isInClient() );  //. true
   //. 参考: https://liff-stp.herokuapp.com/
   liff.init( { liffId: '<%= liff_id %>' } ).then( function(){
     if( !liff.isInClient() ){
@@ -127,7 +126,6 @@ $(function(){
     }
 
     liff.getProfile().then( profile => {
-      //alert( JSON.stringify( profile ) );
       userId = profile.userId;
 
       $.ajax({
@@ -422,8 +420,6 @@ function post(){
     processData: false,
     success: function( result, dataType ){
       if( result.id ){
-        //var accessToken = liff.getAccessToken();
-        //alert( 'accessToken = ' + accessToken );
         //. https://developers.line.biz/ja/reference/messaging-api/#image-message
         var img_url = base_url + 'image?id=' + result.id;
         var img_url0 = img_url + '&att=thumbnail';
@@ -434,34 +430,22 @@ function post(){
           previewImageUrl: img_url0
         };
 
-        //liff.sendMessages([  //. "Error: user doesn't grant required permissions yet"
         if( liff.isInClient() ){
-          //alert( 'liff.sendMessages()' );
-          /* type = 'text' でも同様にエラーとなることを確認済み
-          data = {
-            type: "text",
-            text: "はろー"
-          };
-          */
           //. Use sendMessages()
           liff.sendMessages([
             data
           ]).then( () => {
             console.log( 'message sent' );
-            alert( '送信されました' );
             liff.closeWindow();
           }).catch( ( err ) => {
             console.log( 'error', err );
-            alert( JSON.stringify( err, null, 2 ) );  //. { line: 2, column: 5870, sourceURL: 'https://static.line-scdn.net/liff/edge/2.1/sdk.js' }
+            alert( JSON.stringify( err, null, 2 ) );
           });
         }else{
-          //alert( 'liff.shareTargetPicker()' );
-          //. Use shareTargetPicker()
           liff.shareTargetPicker([
             data
           ]).then( () => {
             console.log( 'message sent' );
-            alert( '送信されました' );
             liff.closeWindow();
           }).catch( ( err ) => {
             console.log( 'error', err );

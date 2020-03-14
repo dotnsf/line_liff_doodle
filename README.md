@@ -15,7 +15,7 @@ Sample Application for LIFF(LIne Front-end Framework), which can upload your doo
 
     - https://developers.line.biz/ja/
 
-- LIFF application in LINE Channel ( as Messaging API )
+- LIFF application in LINE Login Channel
 
     - Application size need to be **tall** or **full**.
 
