@@ -157,18 +157,15 @@ $(function(){
           }
         },
         error: function( err ){
-          alert( 'GET /images_by_userId' );
           alert( JSON.stringify( err ) );
         }
       });
     }).catch( err => {
-      alert( 'getProfile()' );
-      alert( JSON.stringify( err ) );
+      //alert( JSON.stringify( err ) );
       console.log( "getProfile(): " + JSON.stringify( err ) );
     });
   }).catch( err => {
-    alert( 'init()' );
-    alert( JSON.stringify( err ) );
+    //alert( JSON.stringify( err ) );
     console.log( "init(): " + JSON.stringify( err ) );
   });
 
@@ -446,7 +443,7 @@ function post(){
             data
           ]).then( () => {
             console.log( 'message sent' );
-            liff.closeWindow();
+            //liff.closeWindow();
           }).catch( ( err ) => {
             console.log( 'error', err );
             alert( JSON.stringify( err, null, 2 ) );
