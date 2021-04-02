@@ -58,6 +58,27 @@ Sample Application for LIFF(LIne Front-end Framework), which can upload your doo
 - Paste LIFF URL or Web URL(https://liff.line.me/{liff_id}) as your LINE message, and click that URL.
 
 
+## Install into Docker container
+
+- Install Docker
+
+  - https://docs.docker.com/get-docker/
+
+- Pull image
+
+  - `$ docker pull dotnsf/line_liff_doodle`
+
+- Run container with environment values
+
+  - `$ docker run --name line_liff_doodle -e db_url=url -e db_username=username -e db_password=password -e liff_id=liffid -d -p 8080:8080 dotnsf/line_liff_doodle`
+
+    - db_url : URL for Cloudant
+
+    - db_username : username for Cloudant
+
+    - db_password : password for Cloudant
+
+    - liff_id : LIFF ID
 
 ## Links
 
@@ -72,4 +93,4 @@ Sample Application for LIFF(LIne Front-end Framework), which can upload your doo
 
 ## Copyright
 
-2018-2020 [K.Kimura @ Juge.Me](https://github.com/dotnsf) all rights reserved.
+2018-2021 [K.Kimura @ Juge.Me](https://github.com/dotnsf) all rights reserved.

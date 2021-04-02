@@ -13,7 +13,7 @@ var express = require( 'express' ),
 var settings = require( './settings' );
 
 var db = null;
-var cloudant = cloudantlib( { account: settings.db_username, password: settings.db_password } );
+var cloudant = cloudantlib( { url: settings.db_url, username: settings.db_username, password: settings.db_password } );
 if( cloudant ){
   cloudant.db.get( settings.db_name, function( err, body ){
     if( err ){

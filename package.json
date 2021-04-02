@@ -1,11 +1,11 @@
 {
     "name": "line_liff_doodle",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "scripts": {
         "start": "node app.js"
     },
     "dependencies": {
-        "@cloudant/cloudant": "^3.0.1",
+        "@cloudant/cloudant": "^4.3.1",
         "basic-auth-connect": "1.0.x",
         "body-parser": "^1.19.0",
         "easyimage": "^3.1.0",
