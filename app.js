@@ -132,7 +132,7 @@ app.post( '/image', function( req, res ){
           },
         }
       };
-      db.insert( params2, image_id, function( err2, body2, header2 ){
+      db.insert( params2, function( err2, body2, header2 ){
         if( err2 ){
           console.log( err2 );
           var p = JSON.stringify( { status: false, error: err2 }, null, 2 );
