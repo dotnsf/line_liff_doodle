@@ -2,7 +2,7 @@
 
 var express = require( 'express' ),
     basicAuth = require( 'basic-auth-connect' ),
-    easyimg = require( 'easyimage' ),
+    //easyimg = require( 'easyimage' ),
     multer = require( 'multer' ),
     bodyParser = require( 'body-parser' ),
     fs = require( 'fs' ),
@@ -105,6 +105,41 @@ app.post( '/image', function( req, res ){
   var filename = req.file.originalname;
   var userId = req.body.userId;
 
+  var image_id = uuidv1();
+  var img = fs.readFileSync( imgpath );
+  var img64 = new Buffer( img ).toString( 'base64' );
+
+  var params2 = {
+    _id: image_id,
+    filename: filename,
+    userId: userId,
+    timestamp: ( new Date() ).getTime(),
+    _attachments: {
+      image: {
+        content_type: imgtype,
+        data: img64
+      },
+      thumbnail: {
+        content_type: imgtype,
+        data: img64
+      },
+    }
+  };
+  db.insert( params2, function( err2, body2, header2 ){
+    if( err2 ){
+      console.log( err2 );
+      var p = JSON.stringify( { status: false, error: err2 }, null, 2 );
+      res.status( 400 );
+      res.write( p );
+      res.end();
+    }else{
+      var p = JSON.stringify( { status: true, id: image_id, body: body2 }, null, 2 );
+      res.write( p );
+      res.end();
+    }
+    fs.unlink( imgpath, function( err ){} );
+  });
+  /*
   //. thumbnail
   var imgpath0 = imgpath + '_0';
   var option = { src: imgpath, dst: imgpath0, width: 200 };
@@ -147,7 +182,6 @@ app.post( '/image', function( req, res ){
         fs.unlink( imgpath, function( err ){} );
         fs.unlink( imgpath0, function( err ){} );
       });
-
     },
     function( err ){
       fs.unlink( imgpath, function( err ){} );
@@ -158,6 +192,7 @@ app.post( '/image', function( req, res ){
       res.end();
     }
   );
+  */
 });
 
 app.get( '/image', function( req, res ){
