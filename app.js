@@ -12,14 +12,58 @@ var express = require( 'express' ),
 var settings = require( './settings' );
 
 var db = null;
-var cloudant = cloudantlib( { url: settings.db_url, username: settings.db_username, password: settings.db_password } );
-if( cloudant ){
-  cloudant.db.get( settings.db_name, function( err, body ){
-    if( err ){
-      if( err.statusCode == 404 ){
-        cloudant.db.create( settings.db_name, function( err, body ){
+async function connectDB(){
+  return new Promise( async( resolve, reject ) => {
+    if( !db ){
+      var cloudant = cloudantlib( { url: settings.db_url, username: settings.db_username, password: settings.db_password } );
+      if( cloudant ){
+        cloudant.db.get( settings.db_name, function( err, body ){
           if( err ){
-            db = null;
+            if( err.statusCode == 404 ){
+              cloudant.db.create( settings.db_name, function( err, body ){
+                if( err ){
+                  db = null;
+                  reject( err );
+                }else{
+                  db = cloudant.db.use( settings.db_name );
+
+                  //. query index
+                  var query_index_userId = {
+                    _id: "_design/userId-index",
+                    language: "query",
+                    indexes: {
+                      "userId-index": {
+                        index: {
+                          fields: [ { name: "userId", type: "string" } ]
+                        },
+                        type: "text"
+                      }
+                    }
+                  };
+                  db.insert( query_index_userId, function( err, body ){} );
+
+                  resolve( true );
+                }
+              });
+            }else{
+              db = cloudant.db.use( settings.db_name );
+
+              //. query index
+              var query_index_userId = {
+                _id: "_design/userId-index",
+                language: "query",
+                indexes: {
+                  "userId-index": {
+                    index: {
+                      fields: [ { name: "userId", type: "string" } ]
+                    },
+                    type: "text"
+                  }
+                }
+              };
+              db.insert( query_index_userId, function( err, body ){} );
+              resolve( true );
+            }
           }else{
             db = cloudant.db.use( settings.db_name );
 
@@ -37,48 +81,18 @@ if( cloudant ){
               }
             };
             db.insert( query_index_userId, function( err, body ){} );
+            resolve( true );
           }
         });
       }else{
-        db = cloudant.db.use( settings.db_name );
-
-        //. query index
-        var query_index_userId = {
-          _id: "_design/userId-index",
-          language: "query",
-          indexes: {
-            "userId-index": {
-              index: {
-                fields: [ { name: "userId", type: "string" } ]
-              },
-              type: "text"
-            }
-          }
-        };
-        db.insert( query_index_userId, function( err, body ){} );
+        reject( "failed to connect to db." );
       }
     }else{
-      db = cloudant.db.use( settings.db_name );
-
-      //. query index
-      var query_index_userId = {
-        _id: "_design/userId-index",
-        language: "query",
-        indexes: {
-          "userId-index": {
-            index: {
-              fields: [ { name: "userId", type: "string" } ]
-            },
-            type: "text"
-          }
-        }
-      };
-      db.insert( query_index_userId, function( err, body ){} );
+      resolve( true );
     }
   });
 }
 
-//var appEnv = cfenv.getAppEnv();
 
 app.use( multer( { dest: './tmp/' } ).single( 'image' ) );
 app.use( bodyParser.urlencoded( { extended: true } ) );
@@ -286,6 +300,10 @@ function compareByTimestamp( a, b ){
 }
 
 
-var port = process.env.port || 8080;
-app.listen( port );
-console.log( "server stating on " + port + " ..." );
+connectDB().then( function( r ){
+  var port = process.env.port || 8080;
+  app.listen( port );
+  console.log( "server stating on " + port + " ..." );
+}, function( err ){
+  console.log( "server starting error: " + err );
+});
