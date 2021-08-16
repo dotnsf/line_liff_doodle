@@ -11,21 +11,28 @@ var express = require( 'express' ),
     app = express();
 var settings = require( './settings' );
 
+//. env values
+var settings_db_username = 'DB_USERNAME' in process.env ? process.env.DB_USERNAME : settings.db_username; 
+var settings_db_password = 'DB_PASSWORD' in process.env ? process.env.DB_PASSWORD : settings.db_password; 
+var settings_db_name = 'DB_NAME' in process.env ? process.env.DB_NAME : settings.db_name; 
+var settings_db_url = 'DB_URL' in process.env ? process.env.DB_URL : settings.db_URL; 
+var settings_liff_id = 'LIFF_ID' in process.env ? process.env.LIFF_ID : settings.liff_id; 
+
 var db = null;
 async function connectDB(){
   return new Promise( async( resolve, reject ) => {
     if( !db ){
-      var cloudant = cloudantlib( { url: settings.db_url, username: settings.db_username, password: settings.db_password } );
+      var cloudant = cloudantlib( { url: settings_db_url, username: settings_db_username, password: settings_db_password } );
       if( cloudant ){
-        cloudant.db.get( settings.db_name, function( err, body ){
+        cloudant.db.get( settings_db_name, function( err, body ){
           if( err ){
             if( err.statusCode == 404 ){
-              cloudant.db.create( settings.db_name, function( err, body ){
+              cloudant.db.create( settings_db_name, function( err, body ){
                 if( err ){
                   db = null;
                   reject( err );
                 }else{
-                  db = cloudant.db.use( settings.db_name );
+                  db = cloudant.db.use( settings_db_name );
 
                   //. query index
                   var query_index_userId = {
@@ -46,7 +53,7 @@ async function connectDB(){
                 }
               });
             }else{
-              db = cloudant.db.use( settings.db_name );
+              db = cloudant.db.use( settings_db_name );
 
               //. query index
               var query_index_userId = {
@@ -65,7 +72,7 @@ async function connectDB(){
               resolve( true );
             }
           }else{
-            db = cloudant.db.use( settings.db_name );
+            db = cloudant.db.use( settings_db_name );
 
             //. query index
             var query_index_userId = {
@@ -104,7 +111,7 @@ app.set( 'views', __dirname + '/public' );
 app.set( 'view engine', 'ejs' );
 
 app.get( '/', function( req, res ){
-  res.render( 'index', { liff_id: settings.liff_id } );
+  res.render( 'index', { liff_id: settings_liff_id } );
 });
 
 app.post( '/image', function( req, res ){
